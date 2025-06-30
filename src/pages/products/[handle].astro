@@ -1,0 +1,44 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProductDetails from '../../components/ProductDetails.jsx';
+
+// This function now returns a single mock product path.
+export async function getStaticPaths() {
+    return [
+        { params: { handle: 'mock-product' } },
+    ];
+}
+
+const { handle } = Astro.params;
+
+// This now creates a mock product object.
+const product = {
+    id: 'gid://shopify/Product/1',
+    title: 'Mock Jewelry Piece',
+    descriptionHtml: '<p>This is a beautiful mock jewelry piece, perfect for demonstrating the site.</p>',
+    priceRange: {
+        minVariantPrice: {
+            amount: '99.99',
+            currencyCode: 'GBP',
+        },
+    },
+    images: {
+        edges: [
+            { node: { url: 'https://via.placeholder.com/800x800.png/000000/FFFFFF?text=Jewelry+1', altText: 'Mock Jewelry' } },
+            { node: { url: 'https://via.placeholder.com/800x800.png/000000/FFFFFF?text=Jewelry+2', altText: 'Mock Jewelry' } },
+        ],
+    },
+    variants: {
+        edges: [
+            { node: { id: 'gid://shopify/ProductVariant/1', title: 'Gold', priceV2: { amount: '99.99', currencyCode: 'GBP' }, image: { url: 'https://via.placeholder.com/800x800.png/000000/FFFFFF?text=Gold', altText: 'Gold Variant' } } },
+            { node: { id: 'gid://shopify/ProductVariant/2', title: 'Silver', priceV2: { amount: '89.99', currencyCode: 'GBP' }, image: { url: 'https://via.placeholder.com/800x800.png/000000/FFFFFF?text=Silver', altText: 'Silver Variant' } } },
+        ],
+    },
+};
+---
+
+<Layout title={product.title}>
+  <main class="container mx-auto py-20">
+    <ProductDetails client:load product={product} />
+  </main>
+</Layout>

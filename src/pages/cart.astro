@@ -1,0 +1,12 @@
+
+---
+import Layout from '../layouts/Layout.astro';
+import Cart from '../components/Cart.jsx';
+---
+
+<Layout title="Shopping Cart">
+  <main class="container mx-auto py-20">
+    <h1 class="text-3xl font-bold text-center mb-12">Your Shopping Cart</h1>
+    <Cart client:load />
+  </main>
+</Layout>

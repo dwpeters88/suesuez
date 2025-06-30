@@ -1,11 +1,107 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import Card from '../components/Card.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+// This now creates a mock product list.
+const products = [
+    {
+        id: 'gid://shopify/Product/1',
+        title: 'Mock Jewelry Piece 1',
+        handle: 'mock-product-1',
+        priceRange: {
+            minVariantPrice: {
+                amount: '99.99',
+                currencyCode: 'GBP',
+            },
+        },
+        images: {
+            edges: [
+                { node: { url: 'https://via.placeholder.com/400x400.png/000000/FFFFFF?text=Jewelry+1', altText: 'Mock Jewelry' } },
+            ],
+        },
+    },
+    {
+        id: 'gid://shopify/Product/2',
+        title: 'Mock Jewelry Piece 2',
+        handle: 'mock-product-2',
+        priceRange: {
+            minVariantPrice: {
+                amount: '79.99',
+                currencyCode: 'GBP',
+            },
+        },
+        images: {
+            edges: [
+                { node: { url: 'https://via.placeholder.com/400x400.png/000000/FFFFFF?text=Jewelry+2', altText: 'Mock Jewelry' } },
+            ],
+        },
+    },
+    {
+        id: 'gid://shopify/Product/3',
+        title: 'Mock Jewelry Piece 3',
+        handle: 'mock-product-3',
+        priceRange: {
+            minVariantPrice: {
+                amount: '129.99',
+                currencyCode: 'GBP',
+            },
+        },
+        images: {
+            edges: [
+                { node: { url: 'https://via.placeholder.com/400x400.png/000000/FFFFFF?text=Jewelry+3', altText: 'Mock Jewelry' } },
+            ],
+        },
+    },
+        {
+        id: 'gid://shopify/Product/4',
+        title: 'Mock Jewelry Piece 4',
+        handle: 'mock-product-4',
+        priceRange: {
+            minVariantPrice: {
+                amount: '149.99',
+                currencyCode: 'GBP',
+            },
+        },
+        images: {
+            edges: [
+                { node: { url: 'https://via.placeholder.com/400x400.png/000000/FFFFFF?text=Jewelry+4', altText: 'Mock Jewelry' } },
+            ],
+        },
+    },
+];
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="Welcome to our Jewelry Store">
+  <main>
+    <section class="hero bg-gray-100 py-20">
+      <div class="container mx-auto text-center">
+        <h1 class="text-4xl font-bold mb-4">Exquisite Jewelry for Every Occasion</h1>
+        <p class="text-lg text-gray-600">Discover our collection of handcrafted jewelry, made with love and passion.</p>
+      </div>
+    </section>
+
+    <section class="featured-products py-20">
+      <div class="container mx-auto">
+        <h2 class="text-3xl font-bold text-center mb-12">Featured Products</h2>
+        <ul role="list" class="link-card-grid">
+          {products.map((product) => (
+            <Card
+              href={`/products/${product.handle}`}
+              title={product.title}
+              body={new Intl.NumberFormat('en-GB', { style: 'currency', currency: product.priceRange.minVariantPrice.currencyCode }).format(product.priceRange.minVariantPrice.amount)}
+            />
+          ))}
+        </ul>
+      </div>
+    </section>
+  </main>
 </Layout>
+
+<style>
+	.link-card-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
+		gap: 2rem;
+		padding: 0;
+	}
+</style>
