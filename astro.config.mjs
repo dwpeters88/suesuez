@@ -1,11 +1,30 @@
 import { defineConfig } from 'astro/config';
+import react from '@astrojs/react';
+import tailwind from '@astrojs/tailwind';
+import cloudflare from '@astrojs/cloudflare';
 
-// https://astro.build/config
-import react from "@astrojs/react";
-
-// https://astro.build/config
 export default defineConfig({
-  integrations: [react()],
-  site: 'https://creativetimofficial.github.io',
-  base: '/astro-ecommerce'
+  integrations: [
+    react(),
+    tailwind({
+      applyBaseStyles: false,
+    }),
+  ],
+  output: 'hybrid',
+  adapter: cloudflare({
+    platformProxy: {
+      enabled: true,
+    },
+  }),
+  image: {
+    domains: ['cdn.shopify.com'],
+  },
+  vite: {
+    ssr: {
+      noExternal: ['shopify-buy'],
+    },
+  },
+  build: {
+    inlineStylesheets: 'auto',
+  },
 });

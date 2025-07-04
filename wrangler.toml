@@ -1,0 +1,13 @@
+name = "uk-ecommerce-shopify"
+compatibility_date = "2024-01-01"
+
+[env.production]
+name = "uk-ecommerce-shopify"
+
+[env.production.vars]
+# Add your Shopify environment variables here
+# SHOPIFY_STORE_DOMAIN = "your-store.myshopify.com"
+# SHOPIFY_STOREFRONT_ACCESS_TOKEN = "your-storefront-access-token"
+
+[[pages_build_output_dir]]
+dir = "dist" 

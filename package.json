@@ -1,27 +1,39 @@
 {
-  "name": "@example/basics",
+  "name": "uk-ecommerce-shopify",
   "type": "module",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "pages:build": "astro build",
+    "pages:deploy": "wrangler pages deploy ./dist"
   },
   "dependencies": {
     "@astrojs/react": "^4.2.2",
+    "@astrojs/cloudflare": "^12.0.0",
+    "@astrojs/tailwind": "^5.1.2",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
     "astro": "^5.5.5",
-    "forward-ref": "^1.0.0",
-    "json-server": "^0.17.0",
     "react": "^18.2.0",
-    "react-bootstrap": "^2.6.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "shopify-buy": "^2.21.0",
+    "@shopify/storefront-api-client": "^1.0.1",
+    "lucide-react": "^0.263.1",
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "clsx": "^2.0.0",
+    "framer-motion": "^10.16.4",
+    "date-fns": "^2.30.0"
   },
   "devDependencies": {
-    "sass": "^1.55.0"
+    "sass": "^1.55.0",
+    "wrangler": "^3.0.0",
+    "@types/shopify-buy": "^2.10.0"
   }
 }

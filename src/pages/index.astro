@@ -1,386 +1,331 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import data from '../../public/data.json';
-import '../../assets/scss/astro-ecommerce.scss';
-import Navbar from '../components/navbar';
-import ComplexNavbar from '../components/complexNavbar';
-import ComplexNavbarDark from '../components/complexNavbarDark';
-import Footer from '../components/footer';
-import ComplexFooter from '../components/complexFooter';
-import CardProduct from '../components/products/cardProduct';
-import CardCategory from '../components/products/cardCategory';
-import ProductOverviewGrid from '../components/products/productOverviewGrid';
-import ProductOverviewGallery from '../components/products/productOverviewGallery';
-import ShoppingCart from '../components/cart/shoppingCart';
-import ShoppingCart2 from '../components/cart/shoppingCart2';
-import ProductQuickview from '../components/products/productQuickview';
-import ProductQuickview2 from '../components/products/productQuickview2';
-import ProductFeature from '../components/products/productFeature';
-import ProductFeature2 from '../components/products/productFeature2';
-import CategoryFilters from '../components/products/categoryFilters';
-import TestimonialsFade from '../components/promo/testimonialsFade';
-import PromoSectionLarge from '../components/promo/promoSectionLarge';
-import CheckoutOrderSummary from '../components/checkout/checkoutOrderSummary';
-import CheckoutMultiStep from '../components/checkout/checkoutMultiStep';
-import ReviewSimple from '../components/reviews/reviewSimple';
-import ReviewSummaryChart from '../components/reviews/reviewSummaryChart';
-import OrderSummaries from '../components/order/orderSummaries';
-import OrderHistory from '../components/order/orderHistory';
-import IncentiveLarge from '../components/incentives/incentiveLarge';
-import IncentiveCols from '../components/incentives/incentiveCols';
+import Navigation from '../components/Navigation';
+import ProductCard from '../components/ProductCard';
+import Footer from '../components/Footer';
+import { getProducts, getCollections } from '../lib/shopify';
 
-let cartItems = [];
-data.shoppingCart.map(id => 
-  data.products.filter(x => x.id == id).map(x => cartItems.push(x))
-)
-let cartItems2 = [];
-data.shoppingCart2.map(id => 
-  data.products.filter(x => x.id == id).map(x => cartItems2.push(x))
-)
+// Fetch products and collections from Shopify
+const products = await getProducts(12);
+const collections = await getCollections(6);
 
-// filter reviews with ID 01
-let productReviews = data.reviews.filter(x => x.productID == "01");
-
-let orderProducts = [];
-
-data.orders[0].products.forEach(productDetails => {
-  data.products.forEach(product => {
-    if (product.id == productDetails.id) {
-      orderProducts.push(product);
-    }
-  });
-})
-
-let orderHistoryProducts = new Set();
-
-data.orders.forEach((order) => {
-  order.products.forEach(productDetails => {
-    data.products.forEach(product => {
-      if (product.id == productDetails.id) {
-        orderHistoryProducts.add(product);
-      }
-    });
-  })
-})
-
+const featuredProducts = products.slice(0, 8);
+const newArrivals = products.filter(p => p.tags.includes('new')).slice(0, 4);
+const bestSellers = products.filter(p => p.tags.includes('bestseller')).slice(0, 4);
 ---
 
-<script>
-  function toggleHeart(e) {
-    e.target.classList.toggle('fas');
-    e.target.classList.toggle('far');
-    e.target.classList.toggle('text-danger');
-  }
+<Layout title="UK Store - Premium Quality Products Delivered Nationwide">
+  <Navigation client:load />
   
-  document.getElementById('heart1').addEventListener("click", toggleHeart);
-</script>
-
-<Layout title="Astro Ecommerce">
-	<main>
-    <Navbar />
-    <div class="container mt-5">
-      <h3>Product Lists</h3>
-      <p>Components and blocks for Product Lists</p>
-      <div class="row mt-5">
-        {data.products.map(product => 
-          <div class="col-md-6 col-lg-3">
-            <CardProduct 
-              thumb_src = {product.thumb_src}
-              thumb_alt = {product.thumb_alt}
-              color = {product.color}
-              colors = {product.colors}
-              title = {product.title}
-              description = {product.description}
-              price = {product.price}
-              position = "center"
-            />
+  <main>
+    <!-- Hero Section -->
+    <section class="relative bg-gradient-to-r from-primary-600 to-primary-800 text-white">
+      <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+      <div class="relative max-w-7xl 3xl:max-w-8xl 5xl:max-w-[120rem] 7xl:max-w-[160rem] mx-auto px-4 sm:px-6 lg:px-8 3xl:px-12 5xl:px-16 7xl:px-24 py-24">
+        <div class="text-center">
+          <h1 class="text-4xl md:text-6xl font-bold mb-6">
+            Premium Quality<br>
+            <span class="text-primary-200">Delivered Nationwide</span>
+          </h1>
+          <p class="text-xl md:text-2xl mb-8 text-primary-100 max-w-3xl mx-auto">
+            Discover our curated collection of premium products, all with free UK delivery on orders over £50
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/collections/all" class="inline-flex items-center px-8 py-4 bg-white text-primary-600 font-semibold rounded-md hover:bg-gray-50 transition-colors">
+              Shop Now
+            </a>
+            <a href="/collections/new-arrivals" class="inline-flex items-center px-8 py-4 border-2 border-white text-white font-semibold rounded-md hover:bg-white hover:text-primary-600 transition-colors">
+              New Arrivals
+            </a>
           </div>
-        )}        
-      </div>
-
-      <h3>Product Lists</h3>
-      <p>Cards with full details</p>
-      <div class="row">
-        {data.products.map(product => 
-          <div class="col-md-6 col-lg-3">
-            <CardProduct 
-              thumb_src = {product.thumb_src}
-              thumb_alt = {product.thumb_alt}
-              color = {product.color}
-              colors = {product.colors}
-              title = {product.title}
-              description = {product.description}
-              price = {product.price}
-              position = "left"
-            />
-          </div>
-        )}        
-      </div>
-
-      <div class="row mb-8">
-        <div class="d-block text-center mb-5">
-          <h3>Shop by category</h3>
-          <a class="text-dark font-weight-bold" href="#">Browse all categories &#62;</a>
         </div>
-        {data.categories.slice(0, 4).map(category => 
-          <div class="col-md-6 col-lg-3">
-            <CardCategory
-              thumb_src = {category.thumb_src}
-              title = {category.title}
-              collection = {category.collection}
-            />
-          </div>
-        )}
       </div>
+    </section>
 
-      <div class="row mb-5">
-        <div class="d-block text-center mb-5">
-          <h3>Shop by category</h3>
-          <a class="text-dark font-weight-bold" href="#">Browse all categories &#62;</a>
+    <!-- Trust Indicators -->
+    <section class="bg-gray-50 py-8">
+      <div class="max-w-7xl 3xl:max-w-8xl 5xl:max-w-[120rem] 7xl:max-w-[160rem] mx-auto px-4 sm:px-6 lg:px-8 3xl:px-12 5xl:px-16 7xl:px-24">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div class="flex flex-col items-center">
+            <div class="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center mb-3">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 2.5M7 13l2.5 2.5m0 0L12 18m0 0l2.5-2.5" />
+              </svg>
+            </div>
+            <h3 class="font-semibold text-gray-900">Free UK Delivery</h3>
+            <p class="text-sm text-gray-600">On orders over £50</p>
+          </div>
+          <div class="flex flex-col items-center">
+            <div class="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center mb-3">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 class="font-semibold text-gray-900">Quality Guaranteed</h3>
+            <p class="text-sm text-gray-600">Premium products only</p>
+          </div>
+          <div class="flex flex-col items-center">
+            <div class="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center mb-3">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+              </svg>
+            </div>
+            <h3 class="font-semibold text-gray-900">Easy Returns</h3>
+            <p class="text-sm text-gray-600">30-day return policy</p>
+          </div>
+          <div class="flex flex-col items-center">
+            <div class="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center mb-3">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <h3 class="font-semibold text-gray-900">Secure Payments</h3>
+            <p class="text-sm text-gray-600">SSL encrypted checkout</p>
+          </div>
         </div>
-        <div class="col-md-6">
-          <CardCategory
-            classList = "h-100"
-            cta = ""
-            thumb_src = {data.categories[4].thumb_src}
-            title = {data.categories[4].title}
+      </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="py-16">
+      <div class="max-w-7xl 3xl:max-w-8xl 5xl:max-w-[120rem] 7xl:max-w-[160rem] mx-auto px-4 sm:px-6 lg:px-8 3xl:px-12 5xl:px-16 7xl:px-24">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Featured Products</h2>
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            Discover our handpicked selection of premium products, chosen for their exceptional quality and style.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 5xl:grid-cols-6 7xl:grid-cols-8 gap-8 3xl:gap-10 5xl:gap-12">
+          {featuredProducts.map((product) => (
+            <ProductCard 
+              product={product} 
+              client:load 
+            />
+          ))}
+        </div>
+
+        <div class="text-center mt-12">
+          <a href="/collections/all" class="inline-flex items-center px-8 py-3 bg-primary-600 text-white font-semibold rounded-md hover:bg-primary-700 transition-colors">
+            View All Products
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Collections Grid -->
+    <section class="bg-gray-50 py-16">
+      <div class="max-w-7xl 3xl:max-w-8xl 5xl:max-w-[120rem] 7xl:max-w-[160rem] mx-auto px-4 sm:px-6 lg:px-8 3xl:px-12 5xl:px-16 7xl:px-24">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Shop by Category</h2>
+          <p class="text-lg text-gray-600">
+            Explore our carefully curated collections designed to meet every need and style preference.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 5xl:grid-cols-5 7xl:grid-cols-6 gap-8 3xl:gap-10 5xl:gap-12">
+          {collections.slice(0, 6).map((collection) => (
+            <div class="group relative bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+              <div class="aspect-w-16 aspect-h-9">
+                <img 
+                  src={collection.image?.url || '/placeholder-collection.jpg'} 
+                  alt={collection.image?.altText || collection.title}
+                  class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div class="p-6">
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">{collection.title}</h3>
+                <p class="text-gray-600 mb-4">{collection.description}</p>
+                <a 
+                  href={`/collections/${collection.handle}`}
+                  class="inline-flex items-center text-primary-600 hover:text-primary-700 font-medium"
+                >
+                  Shop Collection
+                  <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- New Arrivals -->
+    {newArrivals.length > 0 && (
+      <section class="py-16">
+        <div class="max-w-7xl 3xl:max-w-8xl 5xl:max-w-[120rem] 7xl:max-w-[160rem] mx-auto px-4 sm:px-6 lg:px-8 3xl:px-12 5xl:px-16 7xl:px-24">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">New Arrivals</h2>
+            <p class="text-lg text-gray-600">
+              Be the first to discover our latest products, fresh from our curated selections.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 3xl:grid-cols-5 5xl:grid-cols-6 7xl:grid-cols-8 gap-8 3xl:gap-10 5xl:gap-12">
+            {newArrivals.map((product) => (
+              <ProductCard 
+                product={product} 
+                client:load 
+              />
+            ))}
+          </div>
+
+          <div class="text-center mt-12">
+            <a href="/collections/new-arrivals" class="inline-flex items-center px-8 py-3 border-2 border-primary-600 text-primary-600 font-semibold rounded-md hover:bg-primary-600 hover:text-white transition-colors">
+              View All New Arrivals
+            </a>
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- Newsletter Signup -->
+    <section class="bg-primary-600 text-white py-16">
+      <div class="max-w-4xl 3xl:max-w-5xl 5xl:max-w-6xl 7xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 3xl:px-12 5xl:px-16 7xl:px-24 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">Stay Updated</h2>
+        <p class="text-xl mb-8 text-primary-100">
+          Subscribe to our newsletter for exclusive offers, new arrivals, and style inspiration delivered to your inbox.
+        </p>
+        <form class="max-w-md mx-auto flex flex-col sm:flex-row gap-4">
+          <input 
+            type="email" 
+            placeholder="Enter your email address"
+            class="flex-1 px-6 py-3 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-300"
           />
+          <button 
+            type="submit"
+            class="px-8 py-3 bg-white text-primary-600 font-semibold rounded-md hover:bg-gray-50 transition-colors"
+          >
+            Subscribe
+          </button>
+        </form>
+        <p class="mt-4 text-sm text-primary-200">
+          We respect your privacy. Unsubscribe at any time.
+        </p>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-16 bg-gray-50">
+      <div class="max-w-7xl 3xl:max-w-8xl 5xl:max-w-[120rem] 7xl:max-w-[160rem] mx-auto px-4 sm:px-6 lg:px-8 3xl:px-12 5xl:px-16 7xl:px-24">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">What Our Customers Say</h2>
+          <p class="text-lg text-gray-600">
+            Don't just take our word for it - hear from our satisfied customers across the UK.
+          </p>
         </div>
-        <div class="col-md-6">
-          <div class="mb-4">
-            <CardCategory
-              classList = ""
-              cta = ""
-              thumb_src = {data.categories[5].thumb_src}
-              title = {data.categories[5].title}
-            />
-          </div>
-          <div class="">
-            <CardCategory
-              classList = ""
-              cta = ""
-              thumb_src = {data.categories[6].thumb_src}
-              title = {data.categories[6].title}
-            />
-          </div>
-        </div>
-      </div>
 
-
-      <div class="my-10">
-        <h3>Product Overview</h3>
-        <p class="mb-5">With image grid</p>
-
-        <ProductOverviewGrid  
-          colors={data.products[0].colors}
-          images={data.products[0].images}
-          title={data.products[0].title}
-          full_description={data.products[0].full_description}
-          price={data.products[0].price}
-          highlights={data.products[0].highlights}
-          details={data.products[0].details}
-          rating={data.products[0].rating}
-          reviews={data.products[0].reviews}
-          sizes={data.products[0].sizes}
-        />
-      </div>
-
-      <div class="my-5">
-        <h3>Product Overview</h3>
-        <p class="mb-5">Product Overviews with image gallery and expandable details</p>
-
-        <ProductOverviewGallery 
-          colors={data.products[1].colors} 
-          images={data.products[1].images}
-          title={data.products[1].title}
-          full_description={data.products[1].full_description}
-          price={data.products[1].price}
-          rating={data.products[1].rating}
-          reviews={data.products[1].reviews}
-          data={data.products[1].data}
-        />
-      </div>
-
-
-      <div class="my-10">
-        <ShoppingCart
-          products = {cartItems}
-        />
-      </div>
-
-      <div class="my-10">
-        <ShoppingCart2
-          products = {cartItems2}
-        />
-      </div>
-
-      <div class="my-10">
-        <h3>Category filters</h3>
-        <p class="mb-5">With inline actions and expandable sidebar filters</p>
-        <CategoryFilters 
-          title="Our products"
-        />
-      </div>
-
-      <div class="my-10">
-        <h3>Product Quickviewers</h3>
-        <p class="mb-5">With color selector, size selector, and details link</p>
-
-        <ProductQuickview 
-          colors={data.products[0].colors}
-          thumb_src={data.products[0].thumb_src}
-          title={data.products[0].title}
-          price={data.products[0].price}
-          rating={data.products[0].rating}
-          reviews={data.products[0].reviews}
-          sizes={data.products[0].sizes}
-          images={data.products[0].images}
-        />
-
-        <h3 class="mt-7">Product Quickviewers</h3>
-        <p class="mb-5">With large size selector</p>
-        <ProductQuickview2 
-          colors={data.products[1].colors}
-          thumb_src="/images/mirror.png"
-          title="Sofa"
-          price={data.products[1].price}
-          rating={data.products[1].rating}
-          reviews={data.products[1].reviews}
-        />
-      </div>
-
-      <div class="my-10">
-        <ProductFeature
-          title={data.products[0].title}
-          images={data.products[2].images}
-          full_description={data.products[0].full_description}
-          featuresDetails={data.products[0].featuresDetails}
-        />
-      </div>
-
-      <div class="my-10">
-        <ProductFeature2
-          title={data.products[0].title}
-          full_description={data.products[0].full_description}
-          images={data.products[2].images}
-          data={data.products[2].data}
-        />
-      </div>
-
-      <div class="my-10">
-        <h3 class="mt-5">Complex Navbar White</h3>
-        <a class="text-dark font-weight-bold" href="#">Browse all categories &#62;</a>
-        <br/><br/>
-        <ComplexNavbar />
-        <div class="row mt-4">
-          {data.products.map(product => 
-            <div class="col-12 col-md-6 col-lg-3">
-              <CardProduct
-                thumb_src = {product.thumb_src}
-                thumb_alt = {product.thumb_alt}
-                title = {product.title}
-                price={product.price}
-              />
+        <div class="grid grid-cols-1 md:grid-cols-3 3xl:grid-cols-4 5xl:grid-cols-5 7xl:grid-cols-6 gap-8 3xl:gap-10 5xl:gap-12">
+          <div class="bg-white p-8 rounded-lg shadow-sm">
+            <div class="flex items-center mb-4">
+              <div class="flex text-yellow-400">
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+              </div>
             </div>
-          )}        
-        </div>
-
-        <h3 class="mt-5">Complex Navbar Dark</h3>
-        <a class="text-dark font-weight-bold" href="#">Browse all categories &#62;</a>
-        <br/><br/>
-        <ComplexNavbarDark />
-        <div class="row mt-4">
-          {data.products.map(product => 
-            <div class="col-12 col-md-6 col-lg-3">
-              <CardProduct
-                thumb_src = {product.thumb_src}
-                thumb_alt = {product.thumb_alt}
-                title = {product.title}
-                price={product.price}
-              />
+            <p class="text-gray-700 mb-4">
+              "Absolutely brilliant service! Fast delivery and exactly what I ordered. Will definitely be shopping here again."
+            </p>
+            <div class="flex items-center">
+              <div class="w-10 h-10 bg-gray-300 rounded-full mr-4"></div>
+              <div>
+                <p class="font-semibold text-gray-900">Sarah Johnson</p>
+                <p class="text-sm text-gray-600">Manchester</p>
+              </div>
             </div>
-          )}        
+          </div>
+
+          <div class="bg-white p-8 rounded-lg shadow-sm">
+            <div class="flex items-center mb-4">
+              <div class="flex text-yellow-400">
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+              </div>
+            </div>
+            <p class="text-gray-700 mb-4">
+              "Great quality products and the customer service team are incredibly helpful. Highly recommended!"
+            </p>
+            <div class="flex items-center">
+              <div class="w-10 h-10 bg-gray-300 rounded-full mr-4"></div>
+              <div>
+                <p class="font-semibold text-gray-900">Michael Chen</p>
+                <p class="text-sm text-gray-600">London</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white p-8 rounded-lg shadow-sm">
+            <div class="flex items-center mb-4">
+              <div class="flex text-yellow-400">
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+              </div>
+            </div>
+            <p class="text-gray-700 mb-4">
+              "The quality exceeded my expectations. Beautiful products and packaging. Will be returning customer for sure!"
+            </p>
+            <div class="flex items-center">
+              <div class="w-10 h-10 bg-gray-300 rounded-full mr-4"></div>
+              <div>
+                <p class="font-semibold text-gray-900">Emma Thompson</p>
+                <p class="text-sm text-gray-600">Edinburgh</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+    </section>
+  </main>
 
-      <div class="my-10">
-        <h3>Simple Footer</h3>
-        <Footer />
-
-        <h3 class="mt-8">Complex Footer</h3>
-        <ComplexFooter />
-      </div>
-
-      <div class="my-10">
-        <h3 class="mt-5">Promo Sections</h3>
-        <p class="text-body">Full-width with background image and large content</p>
-        <TestimonialsFade 
-          pageHeaderBgImg={"https://images.unsplash.com/photo-1534802046520-4f27db7f3ae5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2729&q=80"} 
-          pageHeaderMinVh="50vh"
-        />
-      </div>
-
-      <div class="my-10">
-        <h3 class="mt-5">Promo Sections</h3>
-        <p class="text-body">With fading background image and testimonials</p>
-        <PromoSectionLarge 
-          title={data.products[0].title}
-          full_description="The time is now for it to be okay to be great. People in this world shun people for being great. For being a bright color. For standing out. But the time is now to be okay to be the greatest you. Would you believe in what you believe in, if you were the only one who believed it?"  
-          pageHeaderBgImg={"https://images.unsplash.com/photo-1525904097878-94fb15835963?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2370&q=80"} 
-          pageHeaderMinVh="50vh"
-          pageHeaderRadius="1rem"
-        />
-      </div>
-
-      <div class="my-10">
-        <h3>Checkout Forms</h3>
-        <p>Split with order summary</p>
-        <CheckoutOrderSummary 
-          products = {cartItems}
-        />
-      </div>
-
-      <div class="my-10">
-        <h3>Checkout Forms</h3>
-        <p>SWith order summary sidebar</p>
-        <CheckoutMultiStep
-          products = {cartItems2}
-        />
-      </div>
-
-      <div class="my-10">
-        <h3 class="mt-5">Product reviews</h3>
-        <p class="text-body">Simple with avatars</p>
-        <ReviewSimple reviews = {data.reviews}/>
-      </div>
-
-      <div class="my-10">
-        <h3 class="mt-5">Product reviews</h3>
-        <p class="text-body">With summary chart</p>
-        <ReviewSummaryChart reviews = {productReviews}/>
-      </div>
-
-      <div class="my-10">
-        <h3 class="mt-5">Order Summaries</h3>
-        <p class="text-body">With order summary sidebar</p>
-        <OrderSummaries order={data.orders[0]} products={orderProducts} />
-      </div>
-
-      <div class="my-10">
-        <OrderHistory orders = {data.orders} products={orderHistoryProducts} />
-      </div>
-
-      <div class="my-10">
-        <IncentiveLarge />
-      </div>
-
-      <div class="my-10">
-        <h3 class="mt-5">Features</h3>
-        <p class="text-body">3-column with illustrations and header</p>
-        <IncentiveCols />
-      </div>
-      
-      <Footer />
-    </div>
-	</main>
+  <Footer />
 </Layout>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
