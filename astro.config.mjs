@@ -10,7 +10,7 @@ export default defineConfig({
       applyBaseStyles: false,
     }),
   ],
-  output: 'hybrid',
+  output: 'server',
   adapter: cloudflare({
     platformProxy: {
       enabled: true,
