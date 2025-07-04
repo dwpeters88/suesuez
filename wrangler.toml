@@ -8,10 +8,11 @@ pages_build_output_dir = "dist"
 [env.production]
 name = "uk-ecommerce-shopify"
 
-[env.development]
-name = "uk-ecommerce-shopify-dev"
-
-# Environment variables (these will be set in the Cloudflare dashboard)
-# Do not put sensitive values here - use the Cloudflare dashboard instead
-[vars]
+[env.production.vars]
 NODE_ENV = "production"
+
+[env.preview]
+name = "uk-ecommerce-shopify-preview"
+
+[env.preview.vars]
+NODE_ENV = "development"
